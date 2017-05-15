@@ -51,26 +51,68 @@ public class Spieler implements OthelloSpieler
 	
 	public ArrayList<Zug> gegnerischeSteineUndNebenanLeer (ArrayList<Zug> steine) 
 	{
-		ArrayList<Zug> nachbarnGegnerischerSteine = new ArrayList();
+		Zug einZug = new Zug(0,0);
+		boolean gefunden = false;
+		boolean nachbar = true;
+		ArrayList<Zug> möglicheZüge = new ArrayList();
 		for(int i =0; i<steine.size(); i++)
 		{
-			if(spielfeld.spielfeld[steine.get(i).getZeile()][steine.get(i).getSpalte()] == gegnerFarbe)
-			{
+			//if(spielfeld.spielfeld[steine.get(i).getZeile()][steine.get(i).getSpalte()] == gegnerFarbe)
 				for(int k = -1; k<2; k++)
 					for(int j = -1; j<2; j++)
 					{
 						Zug neuerZug = new Zug(steine.get(i).getZeile()+k,steine.get(i).getSpalte()+j);
 						if(imFeld(neuerZug))
-						if(spielfeld.spielfeld[neuerZug.getZeile()][neuerZug.getSpalte()] == Farbe.LEER)
-						{	
-							nachbarnGegnerischerSteine.add(neuerZug);	
+						nachbar = spielfeld.spielfeld[neuerZug.getZeile()][neuerZug.getSpalte()] == Farbe.LEER;
+						//oberhalb des Felds kucken 
+						
+						if(nachbar && k>0 && j == 0)
+						{	for(int p = 1; p<=7; p++)
+								
+						{	einZug = new Zug (neuerZug.getZeile()+p, neuerZug.getSpalte());
+							if(spielfeld.spielfeld[einZug.getZeile()][einZug.getSpalte()] == gegnerFarbe && !gefunden) 
+							{
+								gefunden=true;
+								continue;
+							}
 							
+								if(spielfeld.spielfeld[einZug.getZeile()+p][einZug.getSpalte()] == unsereFarbe)
+									{
+										Zug möglicherZug = new Zug(einZug.getZeile()+p, einZug.getSpalte());	
+												möglicheZüge.add(möglicherZug);
+									}
+						
+						}	
+						/*unterhalb des Felds kucken*/ if(nachbar && k<0 && j == 0)
 							
+									if(spielfeld.spielfeld[steine.get(0).getZeile()][steine.get(0).getSpalte()-p] == gegnerFarbe && 
+										spielfeld.spielfeld[steine.get(0).getZeile()][steine.get(0).getSpalte()-t] == unsereFarbe){
+								
+									}
+								
+						/*rechts des Felds kucken*/ if(nachbar && k==0 && j > 0)
+							
+									if(spielfeld.spielfeld[steine.get(0).getZeile()+p][steine.get(0).getSpalte()] == gegnerFarbe && 
+										spielfeld.spielfeld[steine.get(0).getZeile()+t][steine.get(0).getSpalte()] == unsereFarbe){
+								
+									}
+									
+						/*links des Felds kucken*/ if(nachbar && k==0 && j > 0)
+							
+									if(spielfeld.spielfeld[steine.get(0).getZeile()-p][steine.get(0).getSpalte()] == gegnerFarbe && 
+										spielfeld.spielfeld[steine.get(0).getZeile()-t][steine.get(0).getSpalte()] == unsereFarbe){
+								
+								}
+						/*links oben des Felds kucken*/ if(nachbar && k0 && j > 0)
+							
+							if(spielfeld.spielfeld[steine.get(0).getZeile()-p][steine.get(0).getSpalte()] == gegnerFarbe && 
+								spielfeld.spielfeld[steine.get(0).getZeile()-t][steine.get(0).getSpalte()] == unsereFarbe){
+						
 						}
-					}
-			}
-		}
-		return nachbarnGegnerischerSteine;
+						}	
+				}
+		}	
+		return null;
 	}
 
 	public ArrayList<Zug> möglicheZüge(ArrayList<Zug> nachbarnGegnerischerSteine)

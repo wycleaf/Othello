@@ -49,82 +49,201 @@ public class Spieler implements OthelloSpieler
 		return hierSindSteine;
 	}
 	
-	public ArrayList<Zug> gegnerischeSteineUndNebenanLeer (ArrayList<Zug> steine) 
+	public ArrayList<Zug> möglicheZüge (ArrayList<Zug> steine) 
 	{
 		Zug einZug = new Zug(0,0);
 		boolean gefunden = false;
 		boolean nachbar = true;
-		ArrayList<Zug> möglicheZüge = new ArrayList();
+		ArrayList<Zug> möglicheZüge = new ArrayList<Zug>();
+		//möglicheZüge.add(einZug);
 		for(int i =0; i<steine.size(); i++)
 		{
-			//if(spielfeld.spielfeld[steine.get(i).getZeile()][steine.get(i).getSpalte()] == gegnerFarbe)
-				for(int k = -1; k<2; k++)
+					for(int k = -1; k<2; k++)
 					for(int j = -1; j<2; j++)
 					{
 						Zug neuerZug = new Zug(steine.get(i).getZeile()+k,steine.get(i).getSpalte()+j);
 						if(imFeld(neuerZug))
 						nachbar = spielfeld.spielfeld[neuerZug.getZeile()][neuerZug.getSpalte()] == Farbe.LEER;
-						//oberhalb des Felds kucken 
-						
-						if(nachbar && k>0 && j == 0)
-						{	for(int p = 1; p<=7; p++)
 								
-						{	einZug = new Zug (neuerZug.getZeile()+p, neuerZug.getSpalte());
+						/*oberhalb des Felds kucken*/	if(nachbar && k<0 && j == 0)
+							{System.out.println("oberhalb");
+								System.out.println(neuerZug.getZeile() + " Spalte " + neuerZug.getZeile() + k + " " +j);
+							}
+							for(int p = 1; p<=7; p++)		
+							{	
+							einZug = new Zug (neuerZug.getZeile()+p, neuerZug.getSpalte());
+							if(imFeld(einZug))
 							if(spielfeld.spielfeld[einZug.getZeile()][einZug.getSpalte()] == gegnerFarbe && !gefunden) 
 							{
 								gefunden=true;
 								continue;
 							}
-							
+								Zug zweiZug = new Zug(einZug.getZeile()+p, einZug.getSpalte());
+								if(imFeld(zweiZug))
 								if(spielfeld.spielfeld[einZug.getZeile()+p][einZug.getSpalte()] == unsereFarbe)
 									{
+										
 										Zug möglicherZug = new Zug(einZug.getZeile()+p, einZug.getSpalte());	
-												möglicheZüge.add(möglicherZug);
+										möglicheZüge.add(möglicherZug);
+										break;
 									}
-						
-						}	
-						/*unterhalb des Felds kucken*/ if(nachbar && k<0 && j == 0)
+								
+							}	
+						gefunden=false;
+						/*unterhalb des Felds kucken*/ if(nachbar && k>0 && j == 0)
 							
-									if(spielfeld.spielfeld[steine.get(0).getZeile()][steine.get(0).getSpalte()-p] == gegnerFarbe && 
-										spielfeld.spielfeld[steine.get(0).getZeile()][steine.get(0).getSpalte()-t] == unsereFarbe){
-								
-									}
-								
+							for(int p = -1; p>=-7; p--)		
+							{	
+								einZug = new Zug (neuerZug.getZeile()+p, neuerZug.getSpalte());
+								if(imFeld(einZug))
+								if(spielfeld.spielfeld[einZug.getZeile()][einZug.getSpalte()] == gegnerFarbe && !gefunden) 
+								{
+									gefunden=true;
+									continue;
+								}
+									Zug zweiZug = new Zug(einZug.getZeile()+p, einZug.getSpalte());
+									if(imFeld(zweiZug))
+									if(spielfeld.spielfeld[einZug.getZeile()+p][einZug.getSpalte()] == unsereFarbe)
+										{
+											
+											Zug möglicherZug = new Zug(einZug.getZeile()+p, einZug.getSpalte());	
+											möglicheZüge.add(möglicherZug);
+											break;
+										}
+							}	
+						gefunden=false;	
 						/*rechts des Felds kucken*/ if(nachbar && k==0 && j > 0)
 							
-									if(spielfeld.spielfeld[steine.get(0).getZeile()+p][steine.get(0).getSpalte()] == gegnerFarbe && 
-										spielfeld.spielfeld[steine.get(0).getZeile()+t][steine.get(0).getSpalte()] == unsereFarbe){
-								
-									}
-									
-						/*links des Felds kucken*/ if(nachbar && k==0 && j > 0)
-							
-									if(spielfeld.spielfeld[steine.get(0).getZeile()-p][steine.get(0).getSpalte()] == gegnerFarbe && 
-										spielfeld.spielfeld[steine.get(0).getZeile()-t][steine.get(0).getSpalte()] == unsereFarbe){
-								
+							for(int p = 1; p>=7; p++)		
+							{	
+								einZug = new Zug (neuerZug.getZeile(), neuerZug.getSpalte()+p);
+								if(imFeld(einZug))
+								if(spielfeld.spielfeld[einZug.getZeile()][einZug.getSpalte()] == gegnerFarbe && !gefunden) 
+								{
+									gefunden=true;
+									continue;
 								}
-						/*links oben des Felds kucken*/ if(nachbar && k0 && j > 0)
+										Zug zweiZug = new Zug(einZug.getZeile()+p, einZug.getSpalte());
+										if(imFeld(zweiZug))
+									if(spielfeld.spielfeld[einZug.getZeile()][einZug.getSpalte()+p] == unsereFarbe)
+										{
+											Zug möglicherZug = new Zug(einZug.getZeile(), einZug.getSpalte()+p);	
+											möglicheZüge.add(möglicherZug);
+											break;
+										}
+							}
+						gefunden=false;		
+						/*links des Felds kucken*/ if(nachbar && k==0 && j < 0)
 							
-							if(spielfeld.spielfeld[steine.get(0).getZeile()-p][steine.get(0).getSpalte()] == gegnerFarbe && 
-								spielfeld.spielfeld[steine.get(0).getZeile()-t][steine.get(0).getSpalte()] == unsereFarbe){
+							for(int p = -1; p>=7; p--)		
+							{	
+								einZug = new Zug (neuerZug.getZeile(), neuerZug.getSpalte()+p);
+								if(imFeld(einZug))
+								if(spielfeld.spielfeld[einZug.getZeile()][einZug.getSpalte()] == gegnerFarbe && !gefunden) 
+								{
+									gefunden=true;
+									continue;
+								}
+									
+									Zug zweiZug = new Zug(einZug.getZeile()+p, einZug.getSpalte());
+									if(imFeld(zweiZug))
+									if(spielfeld.spielfeld[einZug.getZeile()][einZug.getSpalte()+p] == unsereFarbe && imFeld(einZug))
+										{
+											Zug möglicherZug = new Zug(einZug.getZeile(), einZug.getSpalte()+p);	
+											möglicheZüge.add(möglicherZug);
+											break;
+										}
+							}
+						gefunden=false;
+						/*links oben des Felds kucken*/ if(nachbar && k<0 && j<0)
+							
+							for(int p = -1; p>=7; p--)		
+							{	
+								einZug = new Zug (neuerZug.getZeile()+p, neuerZug.getSpalte()+p);
+								if(imFeld(einZug))
+								if(spielfeld.spielfeld[einZug.getZeile()][einZug.getSpalte()] == gegnerFarbe && !gefunden) 
+								{
+									gefunden=true;
+									continue;
+								}
+										Zug zweiZug = new Zug(einZug.getZeile()+p, einZug.getSpalte());
+										if(imFeld(zweiZug))
+								
+									if(spielfeld.spielfeld[einZug.getZeile()+p][einZug.getSpalte()+p] == unsereFarbe && imFeld(einZug))
+										{
+											Zug möglicherZug = new Zug(einZug.getZeile()+p, einZug.getSpalte()+p);	
+											möglicheZüge.add(möglicherZug);
+											break;
+										}
+							}
+						gefunden=false;
+						/*links unten des Felds kucken*/ if(nachbar && k>0 && j<0)
+							for(int p = -1; p>=7; p--)		
+							{	
+								einZug = new Zug (neuerZug.getZeile()+(p*-1), neuerZug.getSpalte()+p);
+								if(imFeld(einZug))
+								if(spielfeld.spielfeld[einZug.getZeile()][einZug.getSpalte()] == gegnerFarbe && !gefunden) 
+								{
+									gefunden=true;
+									continue;
+								}
+									Zug zweiZug = new Zug(einZug.getZeile()+p, einZug.getSpalte());
+									if(imFeld(zweiZug))
+									if(spielfeld.spielfeld[einZug.getZeile()+(p*-1)][einZug.getSpalte()+p] == unsereFarbe && imFeld(einZug))
+										{
+											Zug möglicherZug = new Zug(einZug.getZeile()+(p*-1), einZug.getSpalte()+p);	
+											möglicheZüge.add(möglicherZug);
+											break;
+										}
+							}
+						gefunden=false;
+						/*rechts oben des Felds kucken*/ if(nachbar && k<0 && j>0)
+							for(int p = -1; p>=7; p--)		
+							{	
+								einZug = new Zug (neuerZug.getZeile()+p, neuerZug.getSpalte()+(p*-1));
+								if(imFeld(einZug))
+								if(spielfeld.spielfeld[einZug.getZeile()][einZug.getSpalte()] == gegnerFarbe && !gefunden) 
+								{
+									gefunden=true;
+									continue;
+								}
+									Zug zweiZug = new Zug(einZug.getZeile()+p, einZug.getSpalte());
+									if(imFeld(zweiZug))
+									if(spielfeld.spielfeld[einZug.getZeile()+p][einZug.getSpalte()+(p*-1)] == unsereFarbe && imFeld(einZug))
+										{
+											Zug möglicherZug = new Zug(einZug.getZeile()+p, einZug.getSpalte()+(p*-1));	
+											möglicheZüge.add(möglicherZug);
+											break;
+										}
+							}
+						gefunden=false;
+						/*rechts unten des Felds kucken*/ if(nachbar && k>0 && j>0)
+							for(int p = -1; p>=7; p--)		
+							{	
+								einZug = new Zug (neuerZug.getZeile()+(p*-1), neuerZug.getSpalte()+(p*-1));
+								if(imFeld(einZug))
+								if(spielfeld.spielfeld[einZug.getZeile()][einZug.getSpalte()] == gegnerFarbe && !gefunden) 
+								{
+									gefunden=true;
+									continue;
+								}
+									Zug zweiZug = new Zug(einZug.getZeile()+p, einZug.getSpalte());
+									if(imFeld(zweiZug))
+									if(spielfeld.spielfeld[einZug.getZeile()+(p*-1)][einZug.getSpalte()+(p*-1)] == unsereFarbe && imFeld(einZug))
+										{
+										
+											Zug möglicherZug = new Zug(einZug.getZeile()+(p*-1), einZug.getSpalte()+(p*-1));	
+											möglicheZüge.add(möglicherZug);
+											break;
+										}
+							}
+						gefunden=false;
 						
-						}
-						}	
-				}
-		}	
-		return null;
+					}	
+			}
+		return möglicheZüge;
 	}
 
-	public ArrayList<Zug> möglicheZüge(ArrayList<Zug> nachbarnGegnerischerSteine)
-	{
-		for(int i=0; i<nachbarnGegnerischerSteine.size(); i++)
-		{
-			Zug neuerZug = new Zug(nachbarnGegnerischerSteine.get(i).getZeile(), nachbarnGegnerischerSteine.get(i).getSpalte());
-			
-		}
-		
-		return null;
-	}
 	
 	
 	public boolean imFeld(Zug zug)

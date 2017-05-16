@@ -18,8 +18,8 @@ public class OthelloWettkampf
     List<OthelloSpieler> spieler = 
         new ArrayList<OthelloSpieler>();
     //Die Spieler
-    spieler.add(new spieler.S04.Spieler( )); //Suchtiefe Default
-    spieler.add(new spieler.Referenzspieler(2)); //Suchtiefe 9
+    spieler.add(new spieler.Referenzspieler(9)); //Suchtiefe Default
+    spieler.add(new spieler.Referenzspieler(8)); //Suchtiefe 9
     
     
     new rahmen.OthelloArena(150,  //Gesamtbedenkzeit in Sekunden 

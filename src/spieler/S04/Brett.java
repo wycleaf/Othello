@@ -6,6 +6,30 @@ public class Brett implements Cloneable
 	public Farbe spielfeld[][];
 	private static int bewertung[][];
 
+	public static int getSpielfeldgröße() {
+		return spielfeldgröße;
+	}
+
+	public static void setSpielfeldgröße(int spielfeldgröße) {
+		Brett.spielfeldgröße = spielfeldgröße;
+	}
+
+	public Farbe[][] getSpielfeld() {
+		return spielfeld;
+	}
+
+	public void setSpielfeld(Farbe[][] spielfeld) {
+		this.spielfeld = spielfeld;
+	}
+
+	public static int[][] getBewertung() {
+		return bewertung;
+	}
+
+	public static void setBewertung(int[][] bewertung) {
+		Brett.bewertung = bewertung;
+	}
+
 	Brett()
 	{
 		spielfeld = new Farbe [spielfeldgröße][spielfeldgröße];
@@ -25,8 +49,8 @@ public class Brett implements Cloneable
 	
 	public void brettAufbau()
 	{
-		for(int zeile = 0; zeile<spielfeldgröße; zeile++)
-			for(int spalte=0; spalte<spielfeldgröße; spalte++)
+		for(int zeile = 0; zeile<=7; zeile++)
+			for(int spalte=0; spalte<=7; spalte++)
 			{
 				spielfeld[zeile][spalte] = Farbe.LEER;
 			} 

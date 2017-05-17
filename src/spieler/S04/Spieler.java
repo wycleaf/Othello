@@ -451,6 +451,7 @@ public class Spieler implements OthelloSpieler
 															{
 																if((spielfeld.spielfeld[drehstein.getZeile()][drehstein.getSpalte()] == Farbe.LEER))
 																{
+																	System.out.println("Hallo");
 																	//züge.getDrehsteine().clear();
 																	//klasseZüge.remove(züge);
 																	break;

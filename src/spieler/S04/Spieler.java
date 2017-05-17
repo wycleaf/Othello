@@ -29,7 +29,7 @@ public class Spieler implements OthelloSpieler
 	
 	public Zug berechneZug(Zug vorherigerZug, long zeitWeiss, long zeitSchwarz) throws ZugException
 	{
-		ArrayList<Zug> zuDrehendeSteine = new ArrayList<Zug>();
+		ArrayList<ArrayList<Zug>> zuDrehendeSteine = new ArrayList<ArrayList<Zug>>();
 		if(!(vorherigerZug==null))
 		{	
 			zuDrehendeSteine = dreheSteine(vorherigerZug);
@@ -38,28 +38,30 @@ public class Spieler implements OthelloSpieler
 //			else{
 					spielfeld.spielfeld[vorherigerZug.getZeile()][vorherigerZug.getSpalte()] = gegnerFarbe;
 					for(int i=0; i<zuDrehendeSteine.size(); i++)
-					spielfeld.spielfeld[zuDrehendeSteine.get(i).getZeile()][zuDrehendeSteine.get(i).getSpalte()] = gegnerFarbe;
+						for(int k = 0; k<zuDrehendeSteine.get(i).size(); k++)
+					spielfeld.spielfeld[zuDrehendeSteine.get(i).get(k).getZeile()][zuDrehendeSteine.get(i).get(k).getSpalte()] = gegnerFarbe;
 //				}
 			
 		}
 		Zug unserZug = new Zug(-1,-1);
 		unserZug = findeBestenZug(woSindSteine());
 		
-		zuDrehendeSteine = dreheSteine(unserZug);
+		zuDrehendeSteine = dreheSteineBeiUns(unserZug);
 		spielfeld.spielfeld[unserZug.getZeile()][unserZug.getSpalte()] = unsereFarbe;
 		for(int i=0; i<zuDrehendeSteine.size(); i++)
-		spielfeld.spielfeld[zuDrehendeSteine.get(i).getZeile()][zuDrehendeSteine.get(i).getSpalte()] = unsereFarbe;
-			
+			for(int k  = 0; k<zuDrehendeSteine.get(i).size(); k++)
+		spielfeld.spielfeld[zuDrehendeSteine.get(i).get(k).getZeile()][zuDrehendeSteine.get(i).get(k).getSpalte()] = unsereFarbe;
+		
 		return unserZug;
 	}
 	
-	public ArrayList<Zug> dreheSteine(Zug zug) throws ZugException
+	public ArrayList<ArrayList<Zug>> dreheSteine(Zug zug) throws ZugException
 	{
 		ArrayList<Zug> gedrehteSteine = new ArrayList<Zug>();
+		ArrayList<ArrayList<Zug>> listeDerSteine = new ArrayList<ArrayList<Zug>>(); 
 //		if(!(spielfeld.spielfeld[zug.getZeile()][zug.getSpalte()]==Farbe.LEER))
 //			throw new ZugException("Gegnerischer Zug ungültig!");
 		
-		spielfeld.spielfeld[zug.getZeile()][zug.getSpalte()] = gegnerFarbe;
 		for(int z = -1; z<2; z++)
 			for(int s = -1; s<2; s++)
 			{	if(z==0 && s==0) continue;
@@ -73,13 +75,26 @@ public class Spieler implements OthelloSpieler
 						for(int i =1; i<7; i++)
 						{	Zug gedrehterStein = new Zug(neuerZug.getZeile()+i, neuerZug.getSpalte());
 							if(!(imFeld(gedrehterStein)))continue;
+							
+							if (spielfeld.spielfeld[gedrehterStein.getZeile()][gedrehterStein.getSpalte()]==Farbe.LEER)
+							{
+								gedrehteSteine.clear();
+								break;
+							}
+							
 							if(spielfeld.spielfeld[gedrehterStein.getZeile()][gedrehterStein.getSpalte()]==unsereFarbe)
 							{
 								gedrehteSteine.add(gedrehterStein);
 							}
 							
 							if(spielfeld.spielfeld[gedrehterStein.getZeile()][gedrehterStein.getSpalte()]==gegnerFarbe)
+							{
+								listeDerSteine.add(gedrehteSteine);
+								gedrehteSteine.clear();
 								break;
+							}
+								
+							
 						}
 					}
 						if(z<0 && s==0)/*oben*/
@@ -87,13 +102,23 @@ public class Spieler implements OthelloSpieler
 							for(int i =-1; i>-7; i--)
 							{	Zug gedrehterStein = new Zug(neuerZug.getZeile()+i, neuerZug.getSpalte());
 								if(!(imFeld(gedrehterStein)))continue;
+								if (spielfeld.spielfeld[gedrehterStein.getZeile()][gedrehterStein.getSpalte()]==Farbe.LEER)
+								{
+									gedrehteSteine.clear();
+									break;
+								}
+								
 								if(spielfeld.spielfeld[gedrehterStein.getZeile()][gedrehterStein.getSpalte()]==unsereFarbe)
 								{
 									gedrehteSteine.add(gedrehterStein);
 								}
 								
 								if(spielfeld.spielfeld[gedrehterStein.getZeile()][gedrehterStein.getSpalte()]==gegnerFarbe)
+								{
+									listeDerSteine.add(gedrehteSteine);
+									gedrehteSteine.clear();
 									break;
+								}
 							}	
 						}
 						
@@ -102,13 +127,23 @@ public class Spieler implements OthelloSpieler
 							for(int i =-1; i>-7; i--)
 							{	Zug gedrehterStein = new Zug(neuerZug.getZeile(), neuerZug.getSpalte()+i);
 								if(!(imFeld(gedrehterStein)))continue;
+								if (spielfeld.spielfeld[gedrehterStein.getZeile()][gedrehterStein.getSpalte()]==Farbe.LEER)
+								{
+									gedrehteSteine.clear();
+									break;
+								}
+								
 								if(spielfeld.spielfeld[gedrehterStein.getZeile()][gedrehterStein.getSpalte()]==unsereFarbe)
 								{
 									gedrehteSteine.add(gedrehterStein);
 								}
 								
 								if(spielfeld.spielfeld[gedrehterStein.getZeile()][gedrehterStein.getSpalte()]==gegnerFarbe)
+								{
+									listeDerSteine.add(gedrehteSteine);
+									gedrehteSteine.clear();
 									break;
+								}
 							}	
 						}
 						
@@ -117,13 +152,23 @@ public class Spieler implements OthelloSpieler
 							for(int i =1; i<7; i++)
 							{	Zug gedrehterStein = new Zug(neuerZug.getZeile(), neuerZug.getSpalte()+i);
 								if(!(imFeld(gedrehterStein)))continue;
+								if (spielfeld.spielfeld[gedrehterStein.getZeile()][gedrehterStein.getSpalte()]==Farbe.LEER)
+								{
+									gedrehteSteine.clear();
+									break;
+								}
+								
 								if(spielfeld.spielfeld[gedrehterStein.getZeile()][gedrehterStein.getSpalte()]==unsereFarbe)
 								{
 									gedrehteSteine.add(gedrehterStein);
 								}
 								
 								if(spielfeld.spielfeld[gedrehterStein.getZeile()][gedrehterStein.getSpalte()]==gegnerFarbe)
+								{
+									listeDerSteine.add(gedrehteSteine);
+									gedrehteSteine.clear();
 									break;
+								}
 							}	
 						}
 						
@@ -132,13 +177,23 @@ public class Spieler implements OthelloSpieler
 							for(int i =1; i<7; i++)
 							{	Zug gedrehterStein = new Zug(neuerZug.getZeile()+i, neuerZug.getSpalte()+i);
 								if(!(imFeld(gedrehterStein)))continue;
+								if (spielfeld.spielfeld[gedrehterStein.getZeile()][gedrehterStein.getSpalte()]==Farbe.LEER)
+								{
+									gedrehteSteine.clear();
+									break;
+								}
+								
 								if(spielfeld.spielfeld[gedrehterStein.getZeile()][gedrehterStein.getSpalte()]==unsereFarbe)
 								{
 									gedrehteSteine.add(gedrehterStein);
 								}
 								
 								if(spielfeld.spielfeld[gedrehterStein.getZeile()][gedrehterStein.getSpalte()]==gegnerFarbe)
+								{
+									listeDerSteine.add(gedrehteSteine);
+									gedrehteSteine.clear();
 									break;
+								}
 							}	
 						}
 						
@@ -147,13 +202,23 @@ public class Spieler implements OthelloSpieler
 							for(int i =-1; i>-7; i--)
 							{	Zug gedrehterStein = new Zug(neuerZug.getZeile()+i, neuerZug.getSpalte()+i);
 								if(!(imFeld(gedrehterStein)))continue;
+								if (spielfeld.spielfeld[gedrehterStein.getZeile()][gedrehterStein.getSpalte()]==Farbe.LEER)
+								{
+									gedrehteSteine.clear();
+									break;
+								}
+								
 								if(spielfeld.spielfeld[gedrehterStein.getZeile()][gedrehterStein.getSpalte()]==unsereFarbe)
 								{
 									gedrehteSteine.add(gedrehterStein);
 								}
 								
 								if(spielfeld.spielfeld[gedrehterStein.getZeile()][gedrehterStein.getSpalte()]==gegnerFarbe)
+								{
+									listeDerSteine.add(gedrehteSteine);
+									gedrehteSteine.clear();
 									break;
+								}
 							}	
 						}
 						
@@ -162,13 +227,23 @@ public class Spieler implements OthelloSpieler
 							for(int i =-1; i>-7; i--)
 							{	Zug gedrehterStein = new Zug(neuerZug.getZeile()+i, neuerZug.getSpalte()+(i*-1));
 								if(!(imFeld(gedrehterStein)))continue;
+								if (spielfeld.spielfeld[gedrehterStein.getZeile()][gedrehterStein.getSpalte()]==Farbe.LEER)
+								{
+									gedrehteSteine.clear();
+									break;
+								}
+								
 								if(spielfeld.spielfeld[gedrehterStein.getZeile()][gedrehterStein.getSpalte()]==unsereFarbe)
 								{
 									gedrehteSteine.add(gedrehterStein);
 								}
 								
 								if(spielfeld.spielfeld[gedrehterStein.getZeile()][gedrehterStein.getSpalte()]==gegnerFarbe)
+								{
+									listeDerSteine.add(gedrehteSteine);
+									gedrehteSteine.clear();
 									break;
+								}
 							}	
 						}
 						
@@ -177,26 +252,261 @@ public class Spieler implements OthelloSpieler
 							for(int i =-1; i>-7; i--)
 							{	Zug gedrehterStein = new Zug(neuerZug.getZeile()+(i*-1), neuerZug.getSpalte()+i);
 								if(!(imFeld(gedrehterStein)))continue;
+								if (spielfeld.spielfeld[gedrehterStein.getZeile()][gedrehterStein.getSpalte()]==Farbe.LEER)
+								{
+									gedrehteSteine.clear();
+									break;
+								}
+								
 								if(spielfeld.spielfeld[gedrehterStein.getZeile()][gedrehterStein.getSpalte()]==unsereFarbe)
 								{
 									gedrehteSteine.add(gedrehterStein);
 								}
 								
 								if(spielfeld.spielfeld[gedrehterStein.getZeile()][gedrehterStein.getSpalte()]==gegnerFarbe)
+								{
+									listeDerSteine.add(gedrehteSteine);
+									gedrehteSteine.clear();
 									break;
+								}
 							}	
 						}
 				}
 			}
 		
-			return gedrehteSteine;
+			return listeDerSteine;
 		}
+	
+	
+	public ArrayList<ArrayList<Zug>> dreheSteineBeiUns(Zug unserZug)
+	{
+		ArrayList<Zug> gedrehteSteine = new ArrayList<Zug>();
+		ArrayList<ArrayList<Zug>> listeDerSteine = new ArrayList<ArrayList<Zug>>(); 
+//		if(!(spielfeld.spielfeld[zug.getZeile()][zug.getSpalte()]==Farbe.LEER))
+//			throw new ZugException("Gegnerischer Zug ungültig!");
+		
+		for(int z = -1; z<2; z++)
+			for(int s = -1; s<2; s++)
+			{	if(z==0 && s==0) continue;
+				Zug neuerZug = new Zug(unserZug.getZeile()+z, unserZug.getSpalte()+s);
+				if(imFeld(neuerZug))
+				if(spielfeld.spielfeld[neuerZug.getZeile()][neuerZug.getSpalte()]==gegnerFarbe)
+				{
+					gedrehteSteine.add(neuerZug);
+					if(z>0 && s==0)/*unten*/
+					{
+						for(int i =1; i<7; i++)
+						{	Zug gedrehterStein = new Zug(neuerZug.getZeile()+i, neuerZug.getSpalte());
+							if(!(imFeld(gedrehterStein)))continue;
+							
+							if (spielfeld.spielfeld[gedrehterStein.getZeile()][gedrehterStein.getSpalte()]==Farbe.LEER)
+							{
+								gedrehteSteine.clear();
+								break;
+							}
+							
+							if(spielfeld.spielfeld[gedrehterStein.getZeile()][gedrehterStein.getSpalte()]==gegnerFarbe)
+							{
+								gedrehteSteine.add(gedrehterStein);
+							}
+							
+							if(spielfeld.spielfeld[gedrehterStein.getZeile()][gedrehterStein.getSpalte()]==unsereFarbe)
+							{
+								listeDerSteine.add(gedrehteSteine);
+								gedrehteSteine.clear();
+								break;
+							}
+								
+							
+						}
+					}
+						if(z<0 && s==0)/*oben*/
+						{
+							for(int i =-1; i>-7; i--)
+							{	Zug gedrehterStein = new Zug(neuerZug.getZeile()+i, neuerZug.getSpalte());
+								if(!(imFeld(gedrehterStein)))continue;
+								if (spielfeld.spielfeld[gedrehterStein.getZeile()][gedrehterStein.getSpalte()]==Farbe.LEER)
+								{
+									gedrehteSteine.clear();
+									break;
+								}
+								
+								if(spielfeld.spielfeld[gedrehterStein.getZeile()][gedrehterStein.getSpalte()]==gegnerFarbe)
+								{
+									gedrehteSteine.add(gedrehterStein);
+								}
+								
+								if(spielfeld.spielfeld[gedrehterStein.getZeile()][gedrehterStein.getSpalte()]==unsereFarbe)
+								{
+									listeDerSteine.add(gedrehteSteine);
+									gedrehteSteine.clear();
+									break;
+								}
+							}	
+						}
+						
+						if(z==0 && s<0)/*links*/
+						{
+							for(int i =-1; i>-7; i--)
+							{	Zug gedrehterStein = new Zug(neuerZug.getZeile(), neuerZug.getSpalte()+i);
+								if(!(imFeld(gedrehterStein)))continue;
+								if (spielfeld.spielfeld[gedrehterStein.getZeile()][gedrehterStein.getSpalte()]==Farbe.LEER)
+								{
+									gedrehteSteine.clear();
+									break;
+								}
+								
+								if(spielfeld.spielfeld[gedrehterStein.getZeile()][gedrehterStein.getSpalte()]==gegnerFarbe)
+								{
+									gedrehteSteine.add(gedrehterStein);
+								}
+								
+								if(spielfeld.spielfeld[gedrehterStein.getZeile()][gedrehterStein.getSpalte()]==unsereFarbe)
+								{
+									listeDerSteine.add(gedrehteSteine);
+									gedrehteSteine.clear();
+									break;
+								}
+							}	
+						}
+						
+						if(z==0 && s>0)/*rechts*/
+						{
+							for(int i =1; i<7; i++)
+							{	Zug gedrehterStein = new Zug(neuerZug.getZeile(), neuerZug.getSpalte()+i);
+								if(!(imFeld(gedrehterStein)))continue;
+								if (spielfeld.spielfeld[gedrehterStein.getZeile()][gedrehterStein.getSpalte()]==Farbe.LEER)
+								{
+									gedrehteSteine.clear();
+									break;
+								}
+								
+								if(spielfeld.spielfeld[gedrehterStein.getZeile()][gedrehterStein.getSpalte()]==gegnerFarbe)
+								{
+									gedrehteSteine.add(gedrehterStein);
+								}
+								
+								if(spielfeld.spielfeld[gedrehterStein.getZeile()][gedrehterStein.getSpalte()]==unsereFarbe)
+								{
+									listeDerSteine.add(gedrehteSteine);
+									gedrehteSteine.clear();
+									break;
+								}
+							}	
+						}
+						
+						if(z>0 && s>0)/*rechts unten*/
+						{
+							for(int i =1; i<7; i++)
+							{	Zug gedrehterStein = new Zug(neuerZug.getZeile()+i, neuerZug.getSpalte()+i);
+								if(!(imFeld(gedrehterStein)))continue;
+								if (spielfeld.spielfeld[gedrehterStein.getZeile()][gedrehterStein.getSpalte()]==Farbe.LEER)
+								{
+									gedrehteSteine.clear();
+									break;
+								}
+								
+								if(spielfeld.spielfeld[gedrehterStein.getZeile()][gedrehterStein.getSpalte()]==gegnerFarbe)
+								{
+									gedrehteSteine.add(gedrehterStein);
+								}
+								
+								if(spielfeld.spielfeld[gedrehterStein.getZeile()][gedrehterStein.getSpalte()]==unsereFarbe)
+								{
+									listeDerSteine.add(gedrehteSteine);
+									gedrehteSteine.clear();
+									break;
+								}
+							}	
+						}
+						
+						if(z<0 && s<0)/* oben links*/
+						{
+							for(int i =-1; i>-7; i--)
+							{	Zug gedrehterStein = new Zug(neuerZug.getZeile()+i, neuerZug.getSpalte()+i);
+								if(!(imFeld(gedrehterStein)))continue;
+								if (spielfeld.spielfeld[gedrehterStein.getZeile()][gedrehterStein.getSpalte()]==Farbe.LEER)
+								{
+									gedrehteSteine.clear();
+									break;
+								}
+								
+								if(spielfeld.spielfeld[gedrehterStein.getZeile()][gedrehterStein.getSpalte()]==gegnerFarbe)
+								{
+									gedrehteSteine.add(gedrehterStein);
+								}
+								
+								if(spielfeld.spielfeld[gedrehterStein.getZeile()][gedrehterStein.getSpalte()]==unsereFarbe)
+								{
+									listeDerSteine.add(gedrehteSteine);
+									gedrehteSteine.clear();
+									break;
+								}
+							}	
+						}
+						
+						if(z<0 && s>0)/* oben rechts*/
+						{
+							for(int i =-1; i>-7; i--)
+							{	Zug gedrehterStein = new Zug(neuerZug.getZeile()+i, neuerZug.getSpalte()+(i*-1));
+								if(!(imFeld(gedrehterStein)))continue;
+								if (spielfeld.spielfeld[gedrehterStein.getZeile()][gedrehterStein.getSpalte()]==Farbe.LEER)
+								{
+									gedrehteSteine.clear();
+									break;
+								}
+								
+								if(spielfeld.spielfeld[gedrehterStein.getZeile()][gedrehterStein.getSpalte()]==gegnerFarbe)
+								{
+									gedrehteSteine.add(gedrehterStein);
+								}
+								
+								if(spielfeld.spielfeld[gedrehterStein.getZeile()][gedrehterStein.getSpalte()]==unsereFarbe)
+								{
+									listeDerSteine.add(gedrehteSteine);
+									gedrehteSteine.clear();
+									break;
+								}
+							}	
+						}
+						
+						if(z>0 && s<0)/* unten links*/
+						{
+							for(int i =-1; i>-7; i--)
+							{	Zug gedrehterStein = new Zug(neuerZug.getZeile()+(i*-1), neuerZug.getSpalte()+i);
+								if(!(imFeld(gedrehterStein)))continue;
+								if (spielfeld.spielfeld[gedrehterStein.getZeile()][gedrehterStein.getSpalte()]==Farbe.LEER)
+								{
+									gedrehteSteine.clear();
+									break;
+								}
+								
+								if(spielfeld.spielfeld[gedrehterStein.getZeile()][gedrehterStein.getSpalte()]==gegnerFarbe)
+								{
+									gedrehteSteine.add(gedrehterStein);
+								}
+								
+								if(spielfeld.spielfeld[gedrehterStein.getZeile()][gedrehterStein.getSpalte()]==unsereFarbe)
+								{
+									listeDerSteine.add(gedrehteSteine);
+									gedrehteSteine.clear();
+									break;
+								}
+							}	
+						}
+				}
+			}
+		
+			return listeDerSteine;
+		}
+	
+	
 	
  	public Zug findeBestenZug (ArrayList<ZugMitDrehsteinen> züge)
 	{
 		int bestesErgebnis=0;
 		int bewertung = 0;
-		Zug besterZug = new Zug(0,0);
+		Zug besterZug = züge.get(0);
 		for(int i=0; i<züge.size(); i++)
 		{	
 			bewertung += Brett.getBewertung()[züge.get(i).getZeile()][züge.get(i).getSpalte()];
@@ -221,6 +531,7 @@ public class Spieler implements OthelloSpieler
 	public ArrayList<ZugMitDrehsteinen> woSindSteine ()
 	{
 		ArrayList<ZugMitDrehsteinen> klasseZüge = new ArrayList<ZugMitDrehsteinen>();
+		boolean steine = false; 
 		for(int zeile=0; zeile<8; zeile++)
 			for(int spalte=0; spalte<8; spalte++)
 			{
@@ -248,7 +559,8 @@ public class Spieler implements OthelloSpieler
 										{
 											if((spielfeld.spielfeld[drehstein.getZeile()][drehstein.getSpalte()] == Farbe.LEER))
 											{
-												//züge.getDrehsteine().clear();
+												züge.getDrehsteine().clear();
+												steine = false;
 												//klasseZüge.remove(züge);
 												break;
 											}
@@ -256,12 +568,15 @@ public class Spieler implements OthelloSpieler
 											if((spielfeld.spielfeld[drehstein.getZeile()][drehstein.getSpalte()] == gegnerFarbe))
 											{	
 												züge.getDrehsteine().add(drehstein);
+												steine = true;
 												continue;
 											}
 																						
-											if((spielfeld.spielfeld[drehstein.getZeile()][drehstein.getSpalte()] == unsereFarbe) && !züge.getDrehsteine().isEmpty())
+											if((spielfeld.spielfeld[drehstein.getZeile()][drehstein.getSpalte()] == unsereFarbe))
 											{
 												klasseZüge.add(züge);
+												züge.getDrehsteine().clear();
+												steine = false;
 												break;
 											}		
 										}	
@@ -278,19 +593,24 @@ public class Spieler implements OthelloSpieler
 											{
 												if((spielfeld.spielfeld[drehstein.getZeile()][drehstein.getSpalte()] == Farbe.LEER))
 												{
-													//züge.getDrehsteine().clear();
+													züge.getDrehsteine().clear();
 													//klasseZüge.remove(züge);
+													steine = false;
 													break;
 												}
 												
 												if((spielfeld.spielfeld[drehstein.getZeile()][drehstein.getSpalte()] == gegnerFarbe))
-												{	züge.getDrehsteine().add(drehstein);
+												{	
+													züge.getDrehsteine().add(drehstein);
+													steine = true;
 													continue;
 												}
 																							
-												if((spielfeld.spielfeld[drehstein.getZeile()][drehstein.getSpalte()] == unsereFarbe) && !züge.getDrehsteine().isEmpty())
+												if((spielfeld.spielfeld[drehstein.getZeile()][drehstein.getSpalte()] == unsereFarbe))
 												{
 													klasseZüge.add(züge);
+													züge.getDrehsteine().clear();
+													steine = false;
 													break;
 												}
 											}	
@@ -306,20 +626,24 @@ public class Spieler implements OthelloSpieler
 												{
 													if((spielfeld.spielfeld[drehstein.getZeile()][drehstein.getSpalte()] == Farbe.LEER))
 													{
-														//züge.getDrehsteine().clear();
+														züge.getDrehsteine().clear();
 														//klasseZüge.remove(züge);
+														steine = false;
 														break;
 													}
 													
 													if((spielfeld.spielfeld[drehstein.getZeile()][drehstein.getSpalte()] == gegnerFarbe))
 													{	
 														züge.getDrehsteine().add(drehstein);
+														steine = true;
 														continue;
 													}
 																								
-													if((spielfeld.spielfeld[drehstein.getZeile()][drehstein.getSpalte()] == unsereFarbe) && !züge.getDrehsteine().isEmpty())
+													if((spielfeld.spielfeld[drehstein.getZeile()][drehstein.getSpalte()] == unsereFarbe))
 													{
 														klasseZüge.add(züge);
+														züge.getDrehsteine().clear();
+														steine = false;
 														break;
 													}
 												}	
@@ -335,20 +659,24 @@ public class Spieler implements OthelloSpieler
 													{
 														if((spielfeld.spielfeld[drehstein.getZeile()][drehstein.getSpalte()] == Farbe.LEER))
 														{
-															//züge.getDrehsteine().clear();
+															züge.getDrehsteine().clear();
 															//klasseZüge.remove(züge);
+															steine = false;
 															break;
 														}
 														
 														if((spielfeld.spielfeld[drehstein.getZeile()][drehstein.getSpalte()] == gegnerFarbe))
 														{	
 															züge.getDrehsteine().add(drehstein);
+															steine = true;
 															continue;
 														}
 																									
-														if((spielfeld.spielfeld[drehstein.getZeile()][drehstein.getSpalte()] == unsereFarbe) && !züge.getDrehsteine().isEmpty())
+														if((spielfeld.spielfeld[drehstein.getZeile()][drehstein.getSpalte()] == unsereFarbe))
 														{
 															klasseZüge.add(züge);
+															züge.getDrehsteine().clear();
+															steine = false;
 															break;
 														}	
 													}	
@@ -364,20 +692,24 @@ public class Spieler implements OthelloSpieler
 														{
 															if((spielfeld.spielfeld[drehstein.getZeile()][drehstein.getSpalte()] == Farbe.LEER))
 															{
-																//züge.getDrehsteine().clear();
+																züge.getDrehsteine().clear();
 																//klasseZüge.remove(züge);
+																steine = false;
 																break;
 															}
 															
 															if((spielfeld.spielfeld[drehstein.getZeile()][drehstein.getSpalte()] == gegnerFarbe))
 															{	
 																züge.getDrehsteine().add(drehstein);
+																steine = true;
 																continue;	
 															}
 																										
-															if((spielfeld.spielfeld[drehstein.getZeile()][drehstein.getSpalte()] == unsereFarbe) && !züge.getDrehsteine().isEmpty())
+															if((spielfeld.spielfeld[drehstein.getZeile()][drehstein.getSpalte()] == unsereFarbe))
 															{
 																klasseZüge.add(züge);
+																züge.getDrehsteine().clear();
+																steine = false;
 																break;
 															}
 														}	
@@ -393,20 +725,24 @@ public class Spieler implements OthelloSpieler
 															{
 																if((spielfeld.spielfeld[drehstein.getZeile()][drehstein.getSpalte()] == Farbe.LEER))
 																{
-																	//züge.getDrehsteine().clear();
+																	züge.getDrehsteine().clear();
 																	//klasseZüge.remove(züge);
+																	steine = false;
 																	break;
 																}
 																
 																if((spielfeld.spielfeld[drehstein.getZeile()][drehstein.getSpalte()] == gegnerFarbe))
 																{	
 																	züge.getDrehsteine().add(drehstein);
+																	steine = true;
 																	continue;
 																}
 																											
-																if((spielfeld.spielfeld[drehstein.getZeile()][drehstein.getSpalte()] == unsereFarbe) && !züge.getDrehsteine().isEmpty())
+																if((spielfeld.spielfeld[drehstein.getZeile()][drehstein.getSpalte()] == unsereFarbe))
 																{
 																	klasseZüge.add(züge);
+																	züge.getDrehsteine().clear();
+																	steine = false;
 																	break;
 																}
 															}	
@@ -422,20 +758,24 @@ public class Spieler implements OthelloSpieler
 															{
 																if((spielfeld.spielfeld[drehstein.getZeile()][drehstein.getSpalte()] == Farbe.LEER))
 																{
-																	//züge.getDrehsteine().clear();
+																	züge.getDrehsteine().clear();
 																	//klasseZüge.remove(züge);
+																	steine = false;
 																	break;
 																}
 																
 																if((spielfeld.spielfeld[drehstein.getZeile()][drehstein.getSpalte()] == gegnerFarbe))
 																{	
 																	züge.getDrehsteine().add(drehstein);
+																	steine = true;
 																	continue;
 																}
 																											
-																if((spielfeld.spielfeld[drehstein.getZeile()][drehstein.getSpalte()] == unsereFarbe) && !züge.getDrehsteine().isEmpty())
+																if((spielfeld.spielfeld[drehstein.getZeile()][drehstein.getSpalte()] == unsereFarbe))
 																{
 																	klasseZüge.add(züge);
+																	züge.getDrehsteine().clear();
+																	steine = false;
 																	break;
 																}
 															}	
@@ -451,21 +791,24 @@ public class Spieler implements OthelloSpieler
 															{
 																if((spielfeld.spielfeld[drehstein.getZeile()][drehstein.getSpalte()] == Farbe.LEER))
 																{
-																	System.out.println("Hallo");
-																	//züge.getDrehsteine().clear();
+																	züge.getDrehsteine().clear();
 																	//klasseZüge.remove(züge);
+																	steine = false;
 																	break;
 																}
 																
 																if((spielfeld.spielfeld[drehstein.getZeile()][drehstein.getSpalte()] == gegnerFarbe))
 																{	
 																	züge.getDrehsteine().add(drehstein);
+																	steine = true;
 																	continue;
 																}
 																											
-																if((spielfeld.spielfeld[drehstein.getZeile()][drehstein.getSpalte()] == unsereFarbe) && !züge.getDrehsteine().isEmpty())
+																if((spielfeld.spielfeld[drehstein.getZeile()][drehstein.getSpalte()] == unsereFarbe))
 																{	
 																	klasseZüge.add(züge);
+																	züge.getDrehsteine().clear();
+																	steine = false;
 																	break;
 																}	
 															}	
@@ -479,7 +822,19 @@ public class Spieler implements OthelloSpieler
 					return klasseZüge;
 								}	
 	
-	public boolean imFeld(Zug zug)
+	public void druckeBrett()
+	{
+		System.out.println("1 A B C D E F G H");
+		for(int i = 0; i<spielfeld.spielfeld.length; i++)
+			for(int k = 0; k<spielfeld.spielfeld.length; k++)
+			{
+				
+				System.out.println(""+i + spielfeld.spielfeld[i][k]);
+			}
+	}
+	
+	
+ 	public boolean imFeld(Zug zug)
 	{
 		if(zug.getZeile()>7 || zug.getZeile()<0 || zug.getSpalte()>7 || zug.getSpalte()<0)
 			return false;
